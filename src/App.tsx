@@ -1,26 +1,37 @@
 import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import AppWrapper from './AppWrapper';
+import { useDispatch, useSelector } from 'react-redux';
+import { selectUserRole } from './store/selector';
+import { setUserRole } from './store/authSlice';
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+const App: React.FC = () => {
+  const userRole = useSelector(selectUserRole);
+  const dispatch = useDispatch();
+  if (!userRole) {
+    return <div>
+      {userRole}
+      <input type="text" placeholder="Enter your role" />
+      <button onClick={() => {
+        const role = (document.querySelector('input') as HTMLInputElement).value;
+        if (!role) {
+          alert('Please enter a role');
+          return;
+        }
+        if (role !== 'witness' && role !== 'notary' && role !== 'admin') {
+          alert('Invalid role. Please enter witness, notary, or admin.');
+          return;
+        }
+        dispatch(setUserRole(role));
+        // Logic to set the user role in the Redux store
+      }
+      }>Set Role</button>
+      <p>Please enter your role to access the application.</p>
+      <p>Available roles: witness, notary, admin</p>
     </div>
+  }
+  return (
+    <AppWrapper />    
   );
-}
+};
 
 export default App;
